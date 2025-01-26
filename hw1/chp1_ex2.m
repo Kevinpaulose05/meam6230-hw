@@ -94,5 +94,3 @@ plot3([optimal_solution_full.Yopt(1, disturbance_idx) optimal_solution_after_dis
 pause(0.3);
 robot.animateTrajectory(optimal_solution_final.Xopt(:, disturbance_idx:end), ...
     optimal_solution_final.Yopt(:, disturbance_idx:end), target_position, 'Full trajectory with disturbance', f);
-
-

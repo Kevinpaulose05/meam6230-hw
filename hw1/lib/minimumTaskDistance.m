@@ -13,4 +13,28 @@ function cost = minimumTaskDistance(X, U, e, data, robot, target)
     %%%%%%%%%%%%%%%%%%%%%%%%%
     % Fill student code here
     %%%%%%%%%%%%%%%%%%%%%%%%%
+    % Initialize cost
+    cost = 0;
+    
+    % Number of waypoints in the trajectory
+    N = size(X, 1);
+    
+    % Loop through trajectory waypoints
+    for i = 1:N-1
+        % Current joint configuration
+        q_current = X(i, :)';
+        
+        % Next joint configuration
+        q_next = X(i+1, :)';
+        
+        % Compute the Jacobian at the current configuration
+        J = robot.fastJacobian(q_current);
+        
+        % Compute displacement in Cartesian space
+        dq = q_next - q_current; % Joint displacement
+        dx = J * dq;             % Cartesian displacement
+        
+        % Accumulate the square of the Euclidean norm of dx
+        cost = cost + norm(dx)^2;
+    end
 end

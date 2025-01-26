@@ -30,37 +30,68 @@ addpath(genpath(fullfile(filepath, 'lib')));
 
 robot = RobotisWrapper();
 optimalControl = MPC4DOF(robot);
+% Uncomment one of the cost functions to test
 optimalControl.nlSolver.Optimization.CustomCostFcn = @minimumTime;
+%optimalControl.nlSolver.Optimization.CustomCostFcn = @minimumTaskDistance;
+%optimalControl.nlSolver.Optimization.CustomCostFcn = @minimumJointDistance;
 
 target_position = [0.25; 0; 0];
 toleranceDistance = 10e-3;
 maxTime = 5;
-%% Generate batch of minimum time trajectories
-nTraj = 10;
+
+%% Generate batch of trajectories
+nTraj = 10; % Number of trajectories
 nPoints = optimalControl.nlSolver.PredictionHorizon + 1;
 optimalTrajectories = nan(3, nPoints, nTraj);
+metrics = []; % Store performance metrics
 
-h = waitbar(0,'Computing trajectories...');
-for iTraj=1:nTraj
-    
+h = waitbar(0, 'Computing trajectories...');
+for iTraj = 1:nTraj
+    % Start timing
+    tic;
+
     % Find solution starting at random configuration
     q0 = robot.robot.randomConfiguration;
-    % Last two parameters are used to speed up computation
     optimalSolution = optimalControl.solveOptimalTrajectory(target_position, q0, maxTime, true, true);
-    
-    % If the target is reached, append it to the dataset
-    if norm(optimalSolution.Yopt(:, end) - target_position) < toleranceDistance
-        optimalTrajectories(:,:,iTraj) = optimalSolution.Yopt;
+
+    % Stop timing
+    time_taken = toc;
+
+    % Compute final position and deviation
+    final_position = optimalSolution.Yopt(:, end);
+    deviation = norm(final_position - target_position);
+    success = deviation < toleranceDistance;
+
+    % Store successful trajectories
+    if success
+        optimalTrajectories(:, :, iTraj) = optimalSolution.Yopt;
     end
-    
+
+    % Log metrics
+    metrics = [metrics; struct('trajectory_id', iTraj, ...
+                               'time_taken', time_taken, ...
+                               'deviation', deviation, ...
+                               'success', success)];
+
     % Visualize progression
-    waitbar(iTraj/nTraj)
+    waitbar(iTraj / nTraj, h, sprintf('Computing trajectories... (%d/%d)', iTraj, nTraj));
 end
-close(h)
+close(h);
+
+%% Display metrics
+fprintf('Optimal Control Metrics:\n');
+for i = 1:length(metrics)
+    fprintf('Trajectory %d:\n', metrics(i).trajectory_id);
+    fprintf('- Time Taken: %.4f seconds\n', metrics(i).time_taken);
+    fprintf('- Deviation: %.4f\n', metrics(i).deviation);
+    fprintf('- Success: %d\n\n', metrics(i).success);
+end
+
+% Success rate summary
+success_rate = mean([metrics.success]) * 100;
+fprintf('Summary:\n');
+fprintf('- Total Trajectories: %d\n', nTraj);
+fprintf('- Success Rate: %.2f%%\n', success_rate);
 
 % Display all successful trajectories
-optimalControl.showTaskVolume(optimalTrajectories)
-
-
-
-
+optimalControl.showTaskVolume(optimalTrajectories);

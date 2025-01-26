@@ -12,4 +12,13 @@ function cost = minimumTime(X, U, e, data, robot, target)
     %%%%%%%%%%%%%%%%%%%%%%%%%
     % Fill student code here
     %%%%%%%%%%%%%%%%%%%%%%%%%
+    % Extract the final time from the control vector
+    Tf = U(5); 
+    
+    % Define the cost function as the final time
+    cost = Tf;
+    
+    % Optional: Add a small regularization term to stabilize optimization
+    % cost = Tf + 1e-6 * sum(U(1:4).^2);
+
 end

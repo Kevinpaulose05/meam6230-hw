@@ -11,4 +11,15 @@ function cost = minimumJointDistance(X, U, e, data, robot, target)
     %%%%%%%%%%%%%%%%%%%%%%%%%
     % Fill student code here
     %%%%%%%%%%%%%%%%%%%%%%%%%
+    % Initialize cost
+    cost = 0;
+    
+    % Number of waypoints in the trajectory
+    N = size(X, 1);
+
+    % Accumulate the squared joint increments
+    for i = 1:N-1
+        dq = X(i+1,:)' - X(i,:)'; 
+        cost = cost + norm(dq, 2)^2;
+    end
 end
