@@ -3,7 +3,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function trajectory = generateIK(robot, lambda, q0, targetPosition, maxJointSpeed, toleranceDistance, dt)
-    trajectory = []; % 8xN array with 4 joints position and 4 joints speed
 
     %%%%%%%%%%%%%%%%%%%%%%%%%
     % Fill student code here
@@ -16,7 +15,7 @@ function trajectory = generateIK(robot, lambda, q0, targetPosition, maxJointSpee
     success = false; % Flag for success
 
     % Select Jacobian inversion method
-    inversion_method = 'moore-penrose'; % Change to 'damped' for damped pseudo-inverse
+    inversion_method = 'damped'; % Change to 'damped' for damped pseudo-inverse
 
     % Start timing
     tic;

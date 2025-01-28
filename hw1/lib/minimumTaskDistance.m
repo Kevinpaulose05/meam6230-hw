@@ -17,21 +17,20 @@ function cost = minimumTaskDistance(X, U, e, data, robot, target)
     cost = 0;
     
     % Number of waypoints in the trajectory
-    N = size(X, 1);
+    N = data.PredictionHorizon;
     
     % Loop through trajectory waypoints
-    for i = 1:N-1
+    for i = 1:N
         % Current joint configuration
-        q_current = X(i, :)';
-        
-        % Next joint configuration
-        q_next = X(i+1, :)';
+        q_current = X(i, :);
+
+        % Extract the joint velocity vector from the control input
+        dq = U(i, 1:4)'; 
         
         % Compute the Jacobian at the current configuration
         J = robot.fastJacobian(q_current);
         
         % Compute displacement in Cartesian space
-        dq = q_next - q_current; % Joint displacement
         dx = J * dq;             % Cartesian displacement
         
         % Accumulate the square of the Euclidean norm of dx

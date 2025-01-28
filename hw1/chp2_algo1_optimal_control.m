@@ -31,9 +31,9 @@ addpath(genpath(fullfile(filepath, 'lib')));
 robot = RobotisWrapper();
 optimalControl = MPC4DOF(robot);
 % Uncomment one of the cost functions to test
-optimalControl.nlSolver.Optimization.CustomCostFcn = @minimumTime;
+%optimalControl.nlSolver.Optimization.CustomCostFcn = @minimumTime;
 %optimalControl.nlSolver.Optimization.CustomCostFcn = @minimumTaskDistance;
-%optimalControl.nlSolver.Optimization.CustomCostFcn = @minimumJointDistance;
+optimalControl.nlSolver.Optimization.CustomCostFcn = @minimumJointDistance;
 
 target_position = [0.25; 0; 0];
 toleranceDistance = 10e-3;

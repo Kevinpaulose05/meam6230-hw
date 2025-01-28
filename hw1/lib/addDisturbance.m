@@ -21,7 +21,7 @@ function [disturbance_idx, q_mid] = addDisturbance(optimal_solution_full, q_dist
     q_mid = Xopt(:, disturbance_idx);
     
     % Apply the disturbance to the specified joint
-    disturbance_val = disturbance_val/20; % tuned value
+    disturbance_val = deg2rad(disturbance_val); % value in radians
     q_mid(q_disturbance) = q_mid(q_disturbance) + disturbance_val;
     
     % Ensure the joint values remain within feasible bounds
